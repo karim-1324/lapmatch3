@@ -150,33 +150,33 @@ export const HomePage = (): JSX.Element => {
       
       {/* Hero Section */}  
       <section 
-        className="relative py-40 z-30" 
+        className="relative py-20 sm:py-32 lg:py-40 z-30" 
         style={{ 
           backgroundImage: `url('/laptop.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundColor: '#000', // Adding black background to fill empty space
-          minHeight: '950px', // Ensuring full height
+          backgroundColor: '#000',
+          minHeight: '60vh', // Reduce height on mobile
         }}
       >
-
-      {/* <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/10 to-black/10"></div> */}
-        <div className="max-w-[1540px] mx-auto px-6 flex flex-col lg:flex-row items-center justify-between relative z-10">
+        <div className="max-w-[1540px] mx-auto px-4 sm:px-6 flex flex-col lg:flex-row items-center justify-between relative z-10">
           <div className="lg:w-1/2 w-full text-center lg:text-left lg:pl-[117px]">
-            <h1 className="text-4xl font-bold bg-gradient-to-l from-[#036777] to-[#7EF6EE] bg-clip-text text-transparent mb-4 drop-shadow-lg">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-l from-[#036777] to-[#7EF6EE] bg-clip-text text-transparent mb-4 drop-shadow-lg">
               Find The Perfect <span className="text-white">Laptop</span><br />
               For You
             </h1>
-            <p className="text-gray-200 mb-8 drop-shadow-md">
-              Choose from the best devices based on<br />
+            <p className="text-sm sm:text-base text-gray-200 mb-6 sm:mb-8 drop-shadow-md">
+              Choose from the best devices based on<br className="hidden sm:block" />
               your need and preferences
             </p>
-            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4">
+            
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start items-center gap-4">
               <Button
-                className="bg-gradient-to-r from-[#FFAB5B] to-[#FFAB5B] hover:from-[#032a38] hover:to-[#125a72] text-black px-8 py-6 rounded-full"                onClick={handleExploreClick}
+                className="w-full sm:w-auto bg-gradient-to-r from-[#FFAB5B] to-[#FFAB5B] hover:from-[#032a38] hover:to-[#125a72] text-black px-6 sm:px-8 py-4 sm:py-6 rounded-full"
+                onClick={handleExploreClick}
               >
-                <Search className="h-5 w-5 mr-2" />
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Browse Laptops
               </Button>
 

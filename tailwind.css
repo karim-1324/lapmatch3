@@ -99,3 +99,37 @@
     -webkit-text-fill-color: transparent;
   }
 }
+
+/* Add to your global CSS */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Ensure text doesn't overflow */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  /* Make buttons more touch-friendly */
+  button {
+    min-height: 44px;
+  }
+  
+  /* Improve form inputs on mobile */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Improve touch targets */
+@media (hover: none) and (pointer: coarse) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

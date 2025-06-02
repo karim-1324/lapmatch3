@@ -85,17 +85,17 @@ export const ChatbotButton = (): JSX.Element => {
 
   return (
     <button
-      onClick={handleChatbotClick}
+      onClick={() => navigate('/chatbot')}
       className={`
-        fixed z-50 bottom-8 right-8
-        rounded-full shadow-lg
+        fixed bottom-4 right-4 sm:bottom-6 sm:right-6
         flex items-center justify-center
-        w-24 h-24
+        w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24
         bg-transparent
         border-none
         p-0
         transition-all duration-300
         hover:scale-110 hover:shadow-2xl
+        z-50
       `}
       aria-label="Open Chatbot"
       style={{

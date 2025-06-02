@@ -664,30 +664,31 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
         </div>
         
         {/* Filters */}
-        <div className="flex gap-8">
-        <div className={`w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Filter</h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={toggleAllSections}
-                className="text-gray-600 hover:bg-gray-100"
-              >
-                {allExpanded ? (
-                  <>
-                    <MinusIcon className="h-4 w-4 mr-2" />
-                    Collapse All
-                  </>
-                ) : (
-                  <>
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Expand All
-                  </>
-                )}
-              </Button>
-            </div>
-            <div className="mb-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+  {/* Filter Sidebar - Mobile: Collapsible */}
+  <div className={`w-full lg:w-[300px] bg-white rounded-lg shadow-lg p-4 lg:p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
+    <div className="flex justify-between items-center mb-4 lg:mb-6">
+      <h2 className="text-lg lg:text-xl font-bold">Filter</h2>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={toggleAllSections}
+        className="text-gray-600 hover:bg-gray-100"
+      >
+        {allExpanded ? (
+          <>
+            <MinusIcon className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Collapse All</span>
+          </>
+        ) : (
+          <>
+            <PlusIcon className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Expand All</span>
+          </>
+        )}
+      </Button>
+    </div>
+    <div className="mb-6">
               <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('brand')}>
                 <h3 className="font-medium">Brand</h3>
                 {expandedSections.brand ? (
@@ -889,156 +890,60 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
                </div>
           </div>
 
+          {/* Products Grid */}
           <div className="flex-1">
-          {showingChatbotResults && !isChatbotLoading && (
-              <div className="mb-2 text-red-800 border-red-200 hover:bg-red-50 hover:text-red-700">
-                <Button variant="outline" size="sm" onClick={clearChatbotResults}>
-                  <XCircle className="w-4 h-4 mr-2" />
-                  Clear AI Results & Show Filters
-                </Button>
-              </div>
-
-            )}
-            {/* --- End Clear Button --- */}
-           
-            {/* --- Display Chatbot Error --- */}
-            {chatbotError && (
-                <div className="mb-4 p-4 border border-red-300 bg-red-50 text-red-700 rounded-md">
-                    <p><strong>AI Assistant Error:</strong> {chatbotError}</p>
-                </div>
-            )}
-            <div className="flex justify-between items-center mb-8">
-              <div></div>
-              {pagination && !showingChatbotResults && (
-                <p className="text-gray-600">
-                  Showing {products.length} of {pagination.count} products
-                </p>
-              )}
-              {showingChatbotResults && !isChatbotLoading && (
-                <p className="text-gray-600">
-                  Showing {products.length} products from AI Assistant
-                </p>
-              )}
-            </div>
-            
-            {isLoading || isChatbotLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <p>{isChatbotLoading ? "AI Assistant is searching..." : "Loading products..."}</p>
-              </div>
-            ) : products.length === 0 ? (
-              <div className="flex justify-center items-center h-64 border border-gray-200 rounded-lg p-8">
-                <div className="text-center">
-                  <p className="text-lg text-gray-600 mb-4">
-                    {showingChatbotResults ? "AI Assistant couldn't find matching laptops." : "No products found matching your criteria."}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {showingChatbotResults ? "Try rephrasing your request or clear the AI results." : "Try adjusting your filters or check back later."}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                    <Card key={product.id} className="overflow-hidden">
-                    <div className="relative">
-                      <img
-                        src={getImageUrl(product.imageUrl)}
-                        alt={product.name}
-                        className="w-full h-48 object-contain cursor-pointer"
-                        onClick={() => handleProductClick(product.id)}
-                        onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-laptop.png'; }}
+            {/* Products grid with responsive columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+              {products.map((product) => (
+                <Card key={product.id} className="overflow-hidden">
+                  <div className="relative">
+                    <img
+                      src={getImageUrl(product.imageUrl)}
+                      alt={product.name}
+                      className="w-full h-40 sm:h-48 object-contain cursor-pointer"
+                      onClick={() => handleProductClick(product.id)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-red-50"
+                      onClick={(e) => handleToggleFavorite(e, product.id)}
+                    >
+                      <Heart 
+                        className={`h-5 w-5 ${favoriteIds.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} 
                       />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-red-50"
-                        onClick={(e) => handleToggleFavorite(e, product.id)}
-                      >
-                        <Heart 
-                          className={`h-5 w-5 ${favoriteIds.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} 
-                        />
-                      </Button>
-                    </div>
-                      <div className="p-4">
-                        <h3 className="font-medium text-lg mb-2 line-clamp-2 h-14">{product.name}</h3>
-                        <p className="text-2xl font-bold text-[#04364A] mb-4">
-                          {product.price 
-                            ? `${typeof product.price === 'string' 
-                                ? parseFloat(product.price).toLocaleString() 
-                                : (product.price as number).toLocaleString()} EGP`
-                            : 'Price not listed'}
-                        </p>
-                        <p className={`text-sm mb-4 ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
-                          {product.inStock ? 'In Stock' : 'Out of Stock'}
-                        </p> 
-                        <div className="flex gap-2">
-                        <Button
-                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
-                            onClick={() => handleProductClick(product.id)} // Use navigation handler
-                          >
-                            View more
-                          </Button>
-                          <Button
-                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
-                            onClick={() => handleCompare(product.id)} // Use compare handler
-                          >
-                            Compare
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                ))}
-              </div>
-              {/* Pagination */}
-              {totalPages > 1 && !showingChatbotResults && (
-                <div className="flex justify-center mt-8">
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    
-                    {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 7) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 4) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 3) {
-                        pageNum = totalPages - 5 + i;
-                      } else {
-                        pageNum = currentPage - 3 + i;
-                      }     
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={currentPage === pageNum ? "default" : "outline"}
-                          size="icon"
-                          onClick={() => handlePageChange(pageNum)}
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
-                    
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              )}
-            </>
-          )}
+                  <div className="p-4">
+                    <h3 className="font-medium text-lg mb-2 line-clamp-2 h-14">{product.name}</h3>
+                    <p className="text-2xl font-bold text-[#04364A] mb-4">
+                      {product.price 
+                        ? `${typeof product.price === 'string' 
+                            ? parseFloat(product.price).toLocaleString() 
+                            : (product.price as number).toLocaleString()} EGP`
+                        : 'Price not listed'}
+                    </p>
+                    <p className={`text-sm mb-4 ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
+                      {product.inStock ? 'In Stock' : 'Out of Stock'}
+                    </p> 
+                    <div className="flex gap-2">
+                    <Button
+                        className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
+                        onClick={() => handleProductClick(product.id)} // Use navigation handler
+                      >
+                        View more
+                      </Button>
+                      <Button
+                        className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
+                        onClick={() => handleCompare(product.id)} // Use compare handler
+                      >
+                        Compare
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
         {compareNotification && (

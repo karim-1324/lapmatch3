@@ -8,7 +8,6 @@ import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { getFavoriteLaptopIds, toggleFavorite } from "../../services/api";
-import { mockLaptops, placeholderImages } from "../../data/mockLaptops";
 
 const formatStorage = (value: string | number) => {
   const numValue = Number(value);
@@ -41,16 +40,9 @@ const getImageUrl = (url: string | undefined) => {
   if (!url) {
     return '/placeholder-laptop.png';
   }
-  
-  // Use the placeholder images from our mock data
-  // if (url.startsWith('/laptops/') && placeholderImages[url]) {
-  //   return placeholderImages[url];
-  // }
-  
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  
   return `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
@@ -74,64 +66,26 @@ export const ComparePage = (): JSX.Element => {
           throw new Error('No product ID provided');
         }
         
-        // Get first product from mock data
-        const firstProductId = parseInt(productId);
-        const mockProduct1 = mockLaptops.find(laptop => laptop.id === firstProductId);
-        
-        if (!mockProduct1) {
-          throw new Error('First product not found');
-        }
-        
+        const response1 = await fetch(`${API_BASE_URL}/laptops/${productId}`);
+        if (!response1.ok) throw new Error('Failed to fetch first product');
+        const product1Data = await response1.json();
         setProduct1({
-          id: mockProduct1.id.toString(),
-          name: mockProduct1.name,
-          brand: mockProduct1.brand,
-          model: mockProduct1.name,
-          category: mockProduct1.category,
-          processor: mockProduct1.specs.processor,
-          graphics: mockProduct1.specs.gpu,
-          ram: mockProduct1.specs.ram,
-          storage: mockProduct1.specs.storage,
-          display: mockProduct1.specs.display,
-          displaySize: mockProduct1.specs.display.split('-')[0].trim(),
-          displayResolution: mockProduct1.specs.display.includes('FHD') ? 'FHD' : 
-                            mockProduct1.specs.display.includes('QHD') ? 'QHD' : 
-                            mockProduct1.specs.display.includes('OLED') ? 'OLED' : 'HD',
-          price: mockProduct1.price,
-          productUrl: "#",
-          imageUrl: mockProduct1.image,
-          inStock: mockProduct1.inStock
+          ...product1Data,
+          imageUrl: product1Data.image_url,
+          displaySize: product1Data.display_size,
+          displayResolution: product1Data.display_resolution
         });
 
         if (secondProductId) {
-          const secondProductIdInt = parseInt(secondProductId);
-          const mockProduct2 = mockLaptops.find(laptop => laptop.id === secondProductIdInt);
-          
-          if (mockProduct2) {
-            setProduct2({
-              id: mockProduct2.id.toString(),
-              name: mockProduct2.name,
-              brand: mockProduct2.brand,
-              model: mockProduct2.name,
-              category: mockProduct2.category,
-              processor: mockProduct2.specs.processor,
-              graphics: mockProduct2.specs.gpu,
-              ram: mockProduct2.specs.ram,
-              storage: mockProduct2.specs.storage,
-              display: mockProduct2.specs.display,
-              displaySize: mockProduct2.specs.display.split('-')[0].trim(),
-              displayResolution: mockProduct2.specs.display.includes('FHD') ? 'FHD' : 
-                              mockProduct2.specs.display.includes('QHD') ? 'QHD' : 
-                              mockProduct2.specs.display.includes('OLED') ? 'OLED' : 'HD',
-              price: mockProduct2.price,
-              productUrl: "#",
-              imageUrl: mockProduct2.image,
-              inStock: mockProduct2.inStock
-            });
-          } else {
-            console.error("Second product not found in mock data");
-            setProduct2(null);
-          }
+          const response2 = await fetch(`${API_BASE_URL}/laptops/${secondProductId}`);
+          if (!response2.ok) throw new Error('Failed to fetch second product');
+          const product2Data = await response2.json();
+          setProduct2({
+            ...product2Data,
+            imageUrl: product2Data.image_url,
+            displaySize: product2Data.display_size,
+            displayResolution: product2Data.display_resolution
+          });
         } else {
           setProduct2(null);
         }

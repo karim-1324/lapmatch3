@@ -8,7 +8,6 @@ import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { getFavoriteLaptopIds, toggleFavorite } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { mockLaptops, placeholderImages } from "../../data/mockLaptops";
 
 
 interface LaptopDetails {
@@ -36,12 +35,6 @@ const getImageUrl = (url: string | undefined) => {
   if (!url) {
     return '/placeholder-laptop.png';
   }
-  
-  // Use the placeholder images from our mock data
-  // if (url.startsWith('/laptops/') && placeholderImages[url]) {
-  //   return placeholderImages[url];
-  // }
-  
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
@@ -85,37 +78,19 @@ export const DetailsPage = (): JSX.Element => {
           throw new Error('No laptop ID provided');
         }
         
-        // Use mockLaptops instead of API call
-        const laptopId = parseInt(id);
-        const mockLaptop = mockLaptops.find(laptop => laptop.id === laptopId);
-        
-        if (!mockLaptop) {
-          throw new Error('Laptop not found');
+        const response = await fetch(`${API_BASE_URL}/laptops/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch laptop details');
         }
-        
+        const data = await response.json();
         setLaptop({
-          id: mockLaptop.id.toString(),
-          seller: "Store",
-          condition: "New",
-          brand: mockLaptop.brand,
-          model: mockLaptop.name,
-          name: mockLaptop.name,
-          category: mockLaptop.category,
-          processor: mockLaptop.specs.processor,
-          graphics: mockLaptop.specs.gpu,
-          ram: mockLaptop.specs.ram,
-          storage: mockLaptop.specs.storage,
-          display: mockLaptop.specs.display,
-          displaySize: mockLaptop.specs.display.split('-')[0].trim(),
-          displayResolution: mockLaptop.specs.display.includes('FHD') ? 'FHD' : 
-                            mockLaptop.specs.display.includes('QHD') ? 'QHD' : 
-                            mockLaptop.specs.display.includes('OLED') ? 'OLED' : 'HD',
-          price: mockLaptop.price,
-          productUrl: "#",
-          imageUrl: mockLaptop.image,
-          inStock: mockLaptop.inStock
+          ...data,
+          imageUrl: data.image_url, 
+          productUrl: data.product_url,
+          displaySize: data.display_size,
+          displayResolution: data.display_resolution,
+          inStock: data.in_stock
         });
-        
       } catch (error) {
         console.error("Error fetching laptop details:", error);
         setLaptop({

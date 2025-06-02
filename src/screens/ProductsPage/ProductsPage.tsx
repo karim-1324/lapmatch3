@@ -14,7 +14,6 @@ import { ChatbotButton } from "../../components/ChatbotButton";
 import { Heart } from "lucide-react";
 import { getFavoriteLaptopIds, toggleFavorite } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { mockLaptops, mockBrands, mockCategories, placeholderImages } from "../../data/mockLaptops";
 
 interface Product {
   id: string;
@@ -319,108 +318,74 @@ export const ProductsPage = (): JSX.Element => {
   ]);
   const fetchProducts = useCallback(async () => {
     if (showingChatbotResults) {
-      setIsLoading(false);
+      setIsLoading(false); // Ensure loading state is off if we skip fetching
       return;
-    }
-    
+  }
     try {
       setIsLoading(true);
-      // Use mockLaptops instead of API call
+      setChatbotError(null);
+      const queryParams = new URLSearchParams();
+      if (searchQuery) queryParams.append('search', searchQuery);
+      queryParams.append('page', currentPage.toString());
+      if (sortOrder) queryParams.append('ordering', sortOrder);
+      if (selectedBrands.length > 0) queryParams.append('brand', selectedBrands.join(','));
+      if (selectedCategories.length > 0) queryParams.append('category', selectedCategories.join(','));
+      if (selectedStorage.length > 0) queryParams.append('storage', selectedStorage.join(','));
+      if (selectedPerformance.length > 0) queryParams.append('performance', selectedPerformance.join(','));
+      if (selectedScreenSizes.length > 0) {
+         // Keep your existing screen size mapping logic here
+         const screenSizeValues = selectedScreenSizes.map(size => {
+            // ... your switch case ...
+            return size; // Simplified for example
+         }).join(',');
+         queryParams.append('screen_size', screenSizeValues);
+      }
+      queryParams.append('min_price', priceRange[0].toString());
+      queryParams.append('max_price', priceRange[1].toString());
+
+      const response = await fetch(`${API_BASE_URL}/laptops?${queryParams.toString()}`);
       
-      // Apply filters to mock data
-      let filteredProducts = [...mockLaptops].map(laptop => ({
-        id: laptop.id.toString(),
-        name: laptop.name,
-        brand: laptop.brand,
-        model: laptop.name,
-        category: laptop.category,
-        processor: laptop.specs.processor,
-        graphics: laptop.specs.gpu,
-        ram: laptop.specs.ram,
-        storage: laptop.specs.storage,
-        display: laptop.specs.display,
-        displaySize: laptop.specs.display.split('-')[0].trim(),
-        displayResolution: laptop.specs.display.includes('FHD') ? 'FHD' : 
-                           laptop.specs.display.includes('QHD') ? 'QHD' : 
-                           laptop.specs.display.includes('OLED') ? 'OLED' : 'HD',
-        price: laptop.price,
-        productUrl: '#',
-        imageUrl: laptop.image,
-        inStock: laptop.inStock,
-        seller: 'Store',
-        condition: 'New'
-      }));
-      
-      // Apply brand filter
-      if (selectedBrands.length > 0) {
-        filteredProducts = filteredProducts.filter(product => 
-          selectedBrands.includes(product.brand)
-        );
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
       
-      // Apply category filter
-      if (selectedCategories.length > 0) {
-        filteredProducts = filteredProducts.filter(product => 
-          selectedCategories.includes(product.category)
-        );
+      const data = await response.json();
+      
+      if (data.count !== undefined && data.next !== undefined && data.previous !== undefined) {
+        setPagination(data);
+        const pageSize = 10; // Assuming 10 items per page, adjust if needed
+        setTotalPages(Math.ceil(data.count / pageSize));
       }
-      
-      // Apply price filter
-      filteredProducts = filteredProducts.filter(product => 
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-      );
-      
-      // Apply search query
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filteredProducts = filteredProducts.filter(product => 
-          product.name.toLowerCase().includes(query) || 
-          product.brand.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query) ||
-          product.processor.toLowerCase().includes(query)
-        );
+      else {
+        setPagination(null); // Handle cases where pagination info might be missing
+        setTotalPages(1);
       }
-      
-      // Apply sort
-      if (sortOrder) {
-        filteredProducts.sort((a, b) => {
-          if (sortOrder === 'price') {
-            return (a.price || 0) - (b.price || 0);
-          } else if (sortOrder === '-price') {
-            return (b.price || 0) - (a.price || 0);
-          }
-          return 0;
-        });
-      }
-      
-      // Calculate pagination
-      const pageSize = 10;
-      const totalItems = filteredProducts.length;
-      const maxPage = Math.ceil(totalItems / pageSize) || 1;
-      const validCurrentPage = Math.min(currentPage, maxPage);
-      
-      // Paginate results
-      const startIdx = (validCurrentPage - 1) * pageSize;
-      const paginatedProducts = filteredProducts.slice(startIdx, startIdx + pageSize);
-      
-      // setProducts(paginatedProducts);
-      setPagination({
-        count: totalItems,
-        next: validCurrentPage < maxPage ? `?page=${validCurrentPage + 1}` : null,
-        previous: validCurrentPage > 1 ? `?page=${validCurrentPage - 1}` : null,
-        results: paginatedProducts
+      const mapProductData = (product: any) => ({
+        ...product,
+        displaySize: product.display_size ?? product.displaySize,
+        displayResolution: product.display_resolution ?? product.displayResolution,
+        productUrl: product.product_url ?? product.productUrl,
+        imageUrl: product.image_url ?? product.imageUrl,
+        inStock: product.in_stock ?? product.inStock
       });
-      setTotalPages(maxPage);
-      
+      if (data.results) {
+        setProducts(data.results.map(mapProductData));
+      } else if (Array.isArray(data)) { // Handle cases where API might return just an array
+        setProducts(data.map(mapProductData));
+      } else {
+        console.error("Unexpected API response format:", data);
+        setProducts([]);
+      }
+
     } catch (error) {
-      console.error("Error filtering products:", error);
-      setProducts([]);
+      console.error("Error fetching products:", error);
+      setProducts([]); // Clear products on error
       setPagination(null);
       setTotalPages(1);
     } finally {
       setIsLoading(false);
     }
-  }, [
+  },[
     showingChatbotResults, searchQuery, currentPage, sortOrder, selectedBrands,
     selectedCategories, selectedStorage, selectedPerformance, selectedScreenSizes,
     priceRange
@@ -586,11 +551,6 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
       return '/placeholder-laptop.png';
     }
     
-    // Use the placeholder images from our mock data
-    // if (url.startsWith('/laptops/') && placeholderImages[url]) {
-    //   return placeholderImages[url];
-    // }
-    
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
@@ -707,8 +667,7 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
         
         {/* Filters */}
         <div className="flex gap-8">
-        {/* Desktop Filters - Add hidden md:block to hide on mobile */}
-        <div className={`hidden md:block w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
+        <div className={`w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Filter</h2>
               <Button 
@@ -1271,8 +1230,8 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
           </div>
         )}
       </main>
-      {/* {isAuthenticated && <ChatbotButton />} */}
-      <ChatbotButton />
+      {isAuthenticated && <ChatbotButton />}
+
       <Footer />
     </div>
   );

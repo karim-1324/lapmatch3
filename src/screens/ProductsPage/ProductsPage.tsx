@@ -126,8 +126,6 @@ export const ProductsPage = (): JSX.Element => {
   const [selectedPerformance, setSelectedPerformance] = useState<string[]>(() => searchParams.getAll('performance') || []);
   const [selectedEnvironment, setSelectedEnvironment] = useState<string[]>(() => searchParams.getAll('environment') || []);
   const [selectedScreenSizes, setSelectedScreenSizes] = useState<string[]>(() => searchParams.getAll('screen_size') || []);
-  // Add this with your other useState declarations (around line 49-70)
-const [showMobileFilters, setShowMobileFilters] = useState(false);
     //const [priceRange, setPriceRange] = useState([0, 200000]);
     const [priceRange, setPriceRange] = useState<[number, number]>(() => [
     parseInt(searchParams.get('min_price') || '0', 10),
@@ -567,37 +565,94 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
         searchQuery={searchQuery}
       />
 
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 py-4 sm:py-8">
-        {/* Sorting and Mobile Filter Controls */}
+      <main className="max-w-[1440px] mx-auto px-6 py-8">
+        {/* --- Chatbot Input Section --- */}
+        {/* <div className="mb-4 p-3 border border-blue-200 rounded-lg bg-blue-50">
+           <div className="flex justify-between items-center">
+             <h2 className="text-lg font-semibold text-blue-800 flex items-center">
+               <Bot className="w-5 h-5 mr-2" />
+               AI Assistant
+             </h2>
+             <div className="flex gap-2">
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={() => navigate('/chatbot')}
+                 className="text-blue-600 hover:bg-blue-100"
+               >
+                 View Chat History
+               </Button>
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={() => setIsChatbotInputVisible(!isChatbotInputVisible)}
+                 className="text-blue-600 hover:bg-blue-100"
+               >
+                 {isChatbotInputVisible ? "Hide" : "Ask for recommendations"}
+               </Button>
+             </div>
+           </div>
+           {isChatbotInputVisible && (
+             <div className="mt-4 flex gap-2">
+               <Input
+                 type="text"
+                 placeholder="e.g., 'Gaming laptop under 50000 EGP with RTX graphics'"
+                 value={chatbotQuery}
+                 onChange={(e) => setChatbotQuery(e.target.value)} // Update chatbot query state directly
+                 onKeyPress={(e) => e.key === 'Enter' && handleChatbotSubmit()}
+                 className="flex-grow"
+                 disabled={isChatbotLoading}
+               />
+               <Button onClick={handleChatbotSubmit} disabled={isChatbotLoading || !chatbotQuery.trim()}>
+                 <Send className="w-4 h-4 mr-2" />
+                 {isChatbotLoading ? "Searching..." : "Get Laptops"}
+               </Button>
+             </div>
+           )}
+        </div> */}
+
+        {/* Sorting */}
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-xl sm:text-2xl font-bold">{showingChatbotResults ? "AI Assistant Results" : "Products"}</h1>
-          
-          {/* Mobile Filter Toggle Button */}
-          <button 
-            className="md:hidden px-4 py-2 bg-gray-100 rounded-lg flex items-center"
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-          >
-            {showMobileFilters ? 'Hide Filters' : 'Show Filters'} 
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
-            </svg>
-          </button>
-          
-          <div className="hidden md:flex items-center space-x-2">
-            <label htmlFor="sortOrder" className="font-medium text-gray-700">
-              Sort by:
+          {/* Conditionally render title based on source */}
+          <h1 className="text-2xl font-bold">{showingChatbotResults ? "AI Assistant Results" : "Products"}</h1>
+           {/* Clear All Filters button - only show when filters are active */}
+            {(selectedBrands.length > 0 || 
+              selectedCategories.length > 0 || 
+              selectedStorage.length > 0 || 
+              selectedPerformance.length > 0 || 
+              selectedEnvironment.length > 0 || 
+              selectedScreenSizes.length > 0 || 
+              priceRange[0] > 0 || 
+              // priceRange[1] < 200000 ||
+              priceRange[1] < 260000 ||
+              searchQuery.trim() !== "" ||
+              sortOrder !== "") && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={clearAllFilters}
+                className="w-72 mb-1 ml-52 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Clear All Filters
+              </Button>
+            )}
+          <div className="flex items-center space-x-2">
+            <label htmlFor="sortOrder" className=" font-medium text-gray-700">
+              Sort by :
             </label>
             <div className="relative">
               <select
                 id="sortOrder"
                 value={sortOrder}
-                onChange={handleSortChange}
-                className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 pr-8 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                disabled={showingChatbotResults}
-              >
-                <option value="">Default</option>
-                <option value="price">Min Price</option>
-                <option value="-price">Max Price</option>
+                onChange={handleSortChange} // Use the handler
+                className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 pr-8  text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={showingChatbotResults} // Disable sorting for chatbot results
+                >
+                {/* ... options ... */}
+                 <option value="">Default</option>
+                 <option value="price">Min Price</option>
+                 <option value="-price">Max Price</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-400">
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -608,54 +663,11 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
           </div>
         </div>
         
-        {/* Clear All Filters button - only show when filters are active */}
-        {(selectedBrands.length > 0 || 
-          selectedCategories.length > 0 || 
-          selectedStorage.length > 0 || 
-          selectedPerformance.length > 0 || 
-          selectedEnvironment.length > 0 || 
-          selectedScreenSizes.length > 0 || 
-          priceRange[0] > 0 || 
-          priceRange[1] < 260000 ||
-          searchQuery.trim() !== "" ||
-          sortOrder !== "") && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={clearAllFilters}
-            className="w-full md:w-auto mb-4 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-          >
-            <XCircle className="h-4 w-4 mr-2" />
-            Clear All Filters
-          </Button>
-        )}
-        
-        {/* Filters and Products */}
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          {/* Mobile Sort Dropdown - Only show on mobile */}
-          <div className="md:hidden w-full mb-4">
-            <label htmlFor="mobileSortOrder" className="block mb-2 font-medium text-gray-700">
-              Sort by:
-            </label>
-            <select
-              id="mobileSortOrder"
-              value={sortOrder}
-              onChange={handleSortChange}
-              className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 pr-8 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              disabled={showingChatbotResults}
-            >
-              <option value="">Default</option>
-              <option value="price">Min Price</option>
-              <option value="-price">Max Price</option>
-            </select>
-          </div>
-        
-          {/* Filters sidebar - show on desktop always, and on mobile when toggled */}
-          <div 
-            className={`${showMobileFilters ? 'block' : 'hidden'} md:block w-full md:w-[300px] bg-white rounded-lg shadow-lg p-4 sm:p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}
-          >
+        {/* Filters */}
+        <div className="flex gap-8">
+        <div className={`w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg sm:text-xl font-bold">Filter</h2>
+              <h2 className="text-xl font-bold">Filter</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -665,207 +677,203 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
                 {allExpanded ? (
                   <>
                     <MinusIcon className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Collapse All</span>
+                    Collapse All
                   </>
                 ) : (
                   <>
                     <PlusIcon className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Expand All</span>
+                    Expand All
                   </>
                 )}
               </Button>
             </div>
-
-            {/* Filter sections - keep the same but with better spacing for mobile */}
-            <div className="space-y-4">
-              {/* Brand Filter */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('brand')}>
-                  <h3 className="font-medium">Brand</h3>
-                  {expandedSections.brand ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
-                </div>
-                {expandedSections.brand && (
-                  <div className="space-y-2 mt-3 max-h-48 overflow-y-auto">
+            <div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('brand')}>
+                <h3 className="font-medium">Brand</h3>
+                {expandedSections.brand ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
+                )}
+              </div>
+              {expandedSections.brand && (
+                  <div className="space-y-2 mt-3">
                     {brands.map((brand) => (
                       <label key={brand.id} className="flex items-center space-x-2">
                         <Checkbox
                           checked={selectedBrands.includes(brand.id)}
-                          onCheckedChange={() => handleCheckboxChange(setSelectedBrands, selectedBrands, brand.id)}
+                          onCheckedChange={() => handleCheckboxChange(setSelectedBrands, selectedBrands, brand.id)} // Use handler
                         />
                         <span>{brand.label}</span>
                       </label>
                     ))}
-                  </div>
-                )}
-              </div>
-              <Separator className="my-2" />
-              
-              {/* Category Filter */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('category')}>
-                  <h3 className="font-medium">Category</h3>
-                  {expandedSections.category ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
                 </div>
-                {expandedSections.category && (
-                  <div className="space-y-2 mt-3 max-h-48 overflow-y-auto">
-                    {categories.map((category) => (
-                      <label key={category.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedCategories.includes(category.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedCategories([...selectedCategories, category.id]);
-                            } else {
-                              setSelectedCategories(selectedCategories.filter((id) => id !== category.id));
-                            }
-                          }}
-                        />
-                        <span>{category.label}</span>
-                      </label>
-                    ))}
-                  </div>
+              )}
+            </div>
+            <Separator className="my-4" />
+
+            {/* Category Filter */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('category')}>
+                <h3 className="font-medium">Category</h3>
+                {expandedSections.category ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
                 )}
               </div>
-              <Separator className="my-2" />
-
-              {/* Storage Filter */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('storage')}>
-                  <h3 className="font-medium">Storage</h3>
-                  {expandedSections.storage ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
+              {expandedSections.category && (
+                <div className="space-y-2 mt-3">
+                  {categories.map((category) => (
+                    <label key={category.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedCategories([...selectedCategories, category.id]);
+                          } else {
+                            setSelectedCategories(selectedCategories.filter((id) => id !== category.id));
+                          }
+                        }}
+                      />
+                      <span>{category.label}</span>
+                    </label>
+                  ))}
                 </div>
-                {expandedSections.storage && (
-                  <div className="space-y-2 mt-3 max-h-48 overflow-y-auto">
-                    {storage.map((option) => (
-                      <label key={option.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedStorage.includes(option.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedStorage([...selectedStorage, option.id]);
-                            } else {
-                              setSelectedStorage(selectedStorage.filter((id) => id !== option.id));
-                            }
-                          }}
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
+              )}
+            </div>
+            <Separator className="my-4" />
+
+            {/* Storage Filter */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('storage')}>
+                <h3 className="font-medium">Storage</h3>
+                {expandedSections.storage ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
                 )}
               </div>
-              <Separator className="my-2" />
-
-              {/* Performance */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('performance')}>
-                  <h3 className="font-medium">Performance</h3>
-                  {expandedSections.performance ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
+              {expandedSections.storage && (
+                <div className="space-y-2 mt-3">
+                  {storage.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedStorage.includes(option.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedStorage([...selectedStorage, option.id]);
+                          } else {
+                            setSelectedStorage(selectedStorage.filter((id) => id !== option.id));
+                          }
+                        }}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
                 </div>
-                {expandedSections.performance && (
-                  <div className="space-y-2 mt-3 max-h-48 overflow-y-auto">
-                    {performance.map((option) => (
-                      <label key={option.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedPerformance.includes(option.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedPerformance([...selectedPerformance, option.id]);
-                            } else {
-                              setSelectedPerformance(selectedPerformance.filter((id) => id !== option.id));
-                            }
-                          }}
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
+              )}
+            </div>
+            <Separator className="my-4" />
+
+            {/* Performance */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('performance')}>
+                <h3 className="font-medium">Performance</h3>
+                {expandedSections.performance ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
                 )}
               </div>
-              <Separator className="my-2" />
-
-              {/* Environmental */}
-              {/*<div className="mb-6">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('environment')}>
-                  <h3 className="font-medium">Environmental Condition</h3>
-                  {expandedSections.environment ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
+              {expandedSections.performance && (
+                <div className="space-y-2 mt-3">
+                  {performance.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedPerformance.includes(option.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedPerformance([...selectedPerformance, option.id]);
+                          } else {
+                            setSelectedPerformance(selectedPerformance.filter((id) => id !== option.id));
+                          }
+                        }}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
                 </div>
-                {expandedSections.environment && (
-                  <div className="space-y-2 mt-3">
-                    {environment.map((option) => (
-                      <label key={option.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedEnvironment.includes(option.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedEnvironment([...selectedEnvironment, option.id]);
-                            } else {
-                              setSelectedEnvironment(selectedEnvironment.filter((id) => id !== option.id));
-                            }
-                          }}
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
+              )}
+            </div>
+            <Separator className="my-4" />
+
+            {/* Environmental */}
+            {/*<div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('environment')}>
+                <h3 className="font-medium">Environmental Condition</h3>
+                {expandedSections.environment ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
                 )}
               </div>
-              <Separator className="my-4" />*/}
-
-              {/* Screen Size */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('screenSize')}>
-                  <h3 className="font-medium">Screen Size</h3>
-                  {expandedSections.screenSize ? (
-                    <MinusIcon className="h-4 w-4" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4" />
-                  )}
+              {expandedSections.environment && (
+                <div className="space-y-2 mt-3">
+                  {environment.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedEnvironment.includes(option.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedEnvironment([...selectedEnvironment, option.id]);
+                          } else {
+                            setSelectedEnvironment(selectedEnvironment.filter((id) => id !== option.id));
+                          }
+                        }}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
                 </div>
-                {expandedSections.screenSize && (
-                  <div className="space-y-2 mt-3 max-h-48 overflow-y-auto">
-                    {screenSizes.map((option) => (
-                      <label key={option.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedScreenSizes.includes(option.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedScreenSizes([...selectedScreenSizes, option.id]);
-                            } else {
-                              setSelectedScreenSizes(selectedScreenSizes.filter((id) => id !== option.id));
-                            }
-                          }}
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
+              )}
+            </div>
+            <Separator className="my-4" />*/}
+
+            {/* Screen Size */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('screenSize')}>
+                <h3 className="font-medium">Screen Size</h3>
+                {expandedSections.screenSize ? (
+                  <MinusIcon className="h-4 w-4" />
+                ) : (
+                  <PlusIcon className="h-4 w-4" />
                 )}
               </div>
-              <Separator className="my-4" />
+              {expandedSections.screenSize && (
+                <div className="space-y-2 mt-3">
+                  {screenSizes.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedScreenSizes.includes(option.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedScreenSizes([...selectedScreenSizes, option.id]);
+                          } else {
+                            setSelectedScreenSizes(selectedScreenSizes.filter((id) => id !== option.id));
+                          }
+                        }}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Separator className="my-4" />
 
-              {/* Budget */}
-              <div className="mb-6">
+            {/* Budget */}
+            <div className="mb-6">
                  <h3 className="font-medium mb-3">Budget</h3>
                  <Slider
                    value={priceRange} // Use state value
@@ -882,15 +890,15 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
           </div>
 
           <div className="flex-1">
-            {showingChatbotResults && !isChatbotLoading && (
-              <div className="mb-4">
-                <Button variant="outline" size="sm" onClick={clearChatbotResults} className="w-full md:w-auto">
+          {showingChatbotResults && !isChatbotLoading && (
+              <div className="mb-2 text-red-800 border-red-200 hover:bg-red-50 hover:text-red-700">
+                <Button variant="outline" size="sm" onClick={clearChatbotResults}>
                   <XCircle className="w-4 h-4 mr-2" />
                   Clear AI Results & Show Filters
                 </Button>
               </div>
+
             )}
-            
             {/* --- End Clear Button --- */}
            
             {/* --- Display Chatbot Error --- */}
@@ -899,15 +907,15 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
                     <p><strong>AI Assistant Error:</strong> {chatbotError}</p>
                 </div>
             )}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-8">
               <div></div>
               {pagination && !showingChatbotResults && (
-                <p className="text-sm text-gray-600">
+                <p className="text-gray-600">
                   Showing {products.length} of {pagination.count} products
                 </p>
               )}
               {showingChatbotResults && !isChatbotLoading && (
-                <p className="text-sm text-gray-600">
+                <p className="text-gray-600">
                   Showing {products.length} products from AI Assistant
                 </p>
               )}
@@ -918,134 +926,124 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
                 <p>{isChatbotLoading ? "AI Assistant is searching..." : "Loading products..."}</p>
               </div>
             ) : products.length === 0 ? (
-              <div className="flex justify-center items-center h-64 border border-gray-200 rounded-lg p-4 sm:p-8">
+              <div className="flex justify-center items-center h-64 border border-gray-200 rounded-lg p-8">
                 <div className="text-center">
-                  <p className="text-base sm:text-lg text-gray-600 mb-4">
+                  <p className="text-lg text-gray-600 mb-4">
                     {showingChatbotResults ? "AI Assistant couldn't find matching laptops." : "No products found matching your criteria."}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {showingChatbotResults ? "Try rephrasing your request or clear the AI results." : "Try adjusting your filters or check back later."}
                   </p>
                 </div>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {products.map((product) => (
-                    <Card key={product.id} className="overflow-hidden h-full flex flex-col">
-                      <div className="relative">
-                        <img
-                          src={getImageUrl(product.imageUrl)}
-                          alt={product.name}
-                          className="w-full h-40 sm:h-48 object-contain cursor-pointer p-2 sm:p-4"
-                          onClick={() => handleProductClick(product.id)}
-                          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-laptop.png'; }}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                    <Card key={product.id} className="overflow-hidden">
+                    <div className="relative">
+                      <img
+                        src={getImageUrl(product.imageUrl)}
+                        alt={product.name}
+                        className="w-full h-48 object-contain cursor-pointer"
+                        onClick={() => handleProductClick(product.id)}
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-laptop.png'; }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-red-50"
+                        onClick={(e) => handleToggleFavorite(e, product.id)}
+                      >
+                        <Heart 
+                          className={`h-5 w-5 ${favoriteIds.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} 
                         />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-red-50"
-                          onClick={(e) => handleToggleFavorite(e, product.id)}
-                        >
-                          <Heart 
-                            className={`h-5 w-5 ${favoriteIds.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} 
-                          />
-                        </Button>
-                      </div>
-                      <div className="p-3 sm:p-4 flex-grow flex flex-col">
-                        <h3 className="font-medium text-base sm:text-lg mb-2 line-clamp-2 min-h-[2.5rem] sm:h-14">{product.name}</h3>
-                        <p className="text-xl sm:text-2xl font-bold text-[#04364A] mb-2 sm:mb-4">
+                      </Button>
+                    </div>
+                      <div className="p-4">
+                        <h3 className="font-medium text-lg mb-2 line-clamp-2 h-14">{product.name}</h3>
+                        <p className="text-2xl font-bold text-[#04364A] mb-4">
                           {product.price 
                             ? `${typeof product.price === 'string' 
                                 ? parseFloat(product.price).toLocaleString() 
                                 : (product.price as number).toLocaleString()} EGP`
                             : 'Price not listed'}
                         </p>
-                        <p className={`text-xs sm:text-sm mb-2 sm:mb-4 ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
+                        <p className={`text-sm mb-4 ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
                           {product.inStock ? 'In Stock' : 'Out of Stock'}
-                        </p>
-                        <div className="mt-auto flex gap-2">
-                          <Button
-                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white text-xs sm:text-sm"
-                            onClick={() => handleProductClick(product.id)}
+                        </p> 
+                        <div className="flex gap-2">
+                        <Button
+                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
+                            onClick={() => handleProductClick(product.id)} // Use navigation handler
                           >
-                            View
+                            View more
                           </Button>
                           <Button
-                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white text-xs sm:text-sm"
-                            onClick={() => handleCompare(product.id)}
+                            className="flex-1 bg-[#04364A] hover:bg-[#032a38] text-white"
+                            onClick={() => handleCompare(product.id)} // Use compare handler
                           >
                             Compare
                           </Button>
                         </div>
                       </div>
                     </Card>
-                  ))}
-                </div>
-                
-                {/* Pagination - simplified for mobile */}
-                {totalPages > 1 && !showingChatbotResults && (
-                  <div className="flex justify-center mt-6 sm:mt-8">
-                    <div className="flex items-center space-x-1 sm:space-x-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="h-8 w-8 sm:h-10 sm:w-10"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      
-                      {/* Show fewer page buttons on mobile */}
-                      {Array.from(
-                        { length: Math.min(totalPages <= 3 ? totalPages : 3, totalPages) }, 
-                        (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 3) {
-                            pageNum = i + 1;
-                          } else if (currentPage === 1) {
-                            pageNum = i + 1;
-                          } else if (currentPage === totalPages) {
-                            pageNum = totalPages - 2 + i;
-                          } else {
-                            pageNum = currentPage - 1 + i;
-                          }
-                          return (
-                            <Button
-                              key={pageNum}
-                              variant={currentPage === pageNum ? "default" : "outline"}
-                              size="icon"
-                              onClick={() => handlePageChange(pageNum)}
-                              className="h-8 w-8 sm:h-10 sm:w-10"
-                            >
-                              {pageNum}
-                            </Button>
-                          );
-                        }
-                      )}
-                      
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="h-8 w-8 sm:h-10 sm:w-10"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
+                ))}
+              </div>
+              {/* Pagination */}
+              {totalPages > 1 && !showingChatbotResults && (
+                <div className="flex justify-center mt-8">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 7) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 4) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 3) {
+                        pageNum = totalPages - 5 + i;
+                      } else {
+                        pageNum = currentPage - 3 + i;
+                      }     
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="icon"
+                          onClick={() => handlePageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                )}
-              </>
-            )}
+                </div>
+              )}
+            </>
+          )}
           </div>
         </div>
-        
-        {/* Compare Notification Toast */}
         {compareNotification && (
           <div
-            className="fixed bottom-16 sm:top-6 sm:bottom-auto left-4 right-4 sm:left-auto sm:right-6 bg-[#04364A] text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md animate-in slide-in-from-bottom sm:slide-in-from-right"
+            className="fixed top-6 right-6 bg-[#04364A] text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md animate-in slide-in-from-right"
             style={{
               animation: "slideIn 0.3s ease-out forwards",
               display: "flex",
@@ -1058,13 +1056,11 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
             <div>
-              <p className="font-medium text-sm">{compareNotification}</p>
+              <p className="font-medium">{compareNotification}</p>
             </div>
           </div>
         )}
       </main>
-      
-      {/* Adjust ChatbotButton positioning for mobile */}
       {isAuthenticated && <ChatbotButton />}
 
       <Footer />

@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ignore Python virtual environment
 server/venv/
 server/model/
 worked but with confucsion

@@ -51,6 +51,29 @@ export const ChatbotButton = (): JSX.Element => {
     90% { transform: translateY(-2px) scale(1.01) rotate(-1deg); }
     100% { transform: translateY(0) scale(1) rotate(0deg); }
   }
+  
+  /* Mobile-specific animations */
+  @media (max-width: 640px) {
+    @keyframes chatbotFlyIn {
+      0% { transform: translateX(100px) translateY(100px) scale(0.5); opacity: 0; }
+      50% { transform: translateX(-10px) translateY(-10px) scale(1.1); opacity: 1; }
+      100% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+    }
+    
+    @keyframes periodicVibration {
+      0% { transform: translateY(0) scale(1) rotate(0deg); }
+      10% { transform: translateY(-5px) scale(1.05) rotate(-3deg);  }
+      20% { transform: translateY(0) scale(1) rotate(3deg); }
+      30% { transform: translateY(-5px) scale(1.03) rotate(-2deg); }
+      40% { transform: translateY(0) scale(1) rotate(3deg); }
+      50% { transform: translateY(-3px) scale(1.02) rotate(-2deg); }
+      60% { transform: translateY(0) scale(1) rotate(2deg); }
+      70% { transform: translateY(-2px) scale(1.01) rotate(-1deg); }
+      80% { transform: translateY(0) scale(1) rotate(1deg); }
+      90% { transform: translateY(-1px) scale(1.01) rotate(-0.5deg); }
+      100% { transform: translateY(0) scale(1) rotate(0deg); }
+    }
+  }
   `;
 
   // --- Chatbot floating button state for animation ---
@@ -85,17 +108,17 @@ export const ChatbotButton = (): JSX.Element => {
 
   return (
     <button
-      onClick={() => navigate('/chatbot')}
+      onClick={handleChatbotClick}
       className={`
-        fixed bottom-4 right-4 sm:bottom-6 sm:right-6
+        fixed z-50 bottom-6 right-4 sm:bottom-8 sm:right-8
+        rounded-full shadow-lg
         flex items-center justify-center
-        w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24
+        w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24
         bg-transparent
         border-none
         p-0
         transition-all duration-300
         hover:scale-110 hover:shadow-2xl
-        z-50
       `}
       aria-label="Open Chatbot"
       style={{
@@ -114,11 +137,11 @@ export const ChatbotButton = (): JSX.Element => {
           alt="Chatbot"
           className="w-full h-full object-contain transition-transform duration-300"
         />
-        {/* Hello Icon positioned top-left */}
+        {/* Hello Icon positioned top-left - hide on very small screens */}
         <img
           src="/hello.png"
           alt="Hello"
-          className={`absolute -top-6 -left-16 w-22 h-16 transition-all duration-800 ${
+          className={`absolute -top-6 -left-16 w-16 sm:w-22 h-12 sm:h-16 transition-all duration-800 hidden sm:block ${
             (showWelcome || hovered) ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
           }`}
           style={{

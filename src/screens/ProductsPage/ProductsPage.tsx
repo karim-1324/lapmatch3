@@ -5,7 +5,7 @@ import { Card } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Slider } from "../../components/ui/slider";
-import { PlusIcon, MinusIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { PlusIcon, MinusIcon, ChevronLeft, ChevronRight, Menu, X, Filter } from "lucide-react";
 import { API_BASE_URL } from "../../config/api";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
@@ -268,6 +268,8 @@ export const ProductsPage = (): JSX.Element => {
     environment: false,
     screenSize: false,
   });
+  // Add this with your other useState declarations in ProductsPage.tsx
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [allExpanded, setAllExpanded] = useState(false);
   const [chatbotQuery, setChatbotQuery] = useState(() => searchParams.get('chatbotQuery') || "");
   const [showingChatbotResults, setShowingChatbotResults] = useState(() => searchParams.get('source') === 'chatbot');
@@ -1041,6 +1043,173 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
           )}
           </div>
         </div>
+
+        {/* Mobile Filter Button */}
+        <div className="md:hidden mb-4">
+          <Button 
+            onClick={() => setShowMobileFilters(true)} 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2"
+            disabled={showingChatbotResults}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </Button>
+        </div>
+
+        {/* Mobile Filters Overlay */}
+        {showMobileFilters && (
+          <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
+            <div className="bg-white h-full w-[85%] max-w-sm overflow-auto p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="font-bold text-lg">Filters</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowMobileFilters(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              {/* Copy of your filters with simplified styling */}
+              <div className="space-y-6">
+                {/* Brand Filter - Mobile */}
+                <div>
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('brand')}>
+                    <h3 className="font-medium">Brand</h3>
+                    {expandedSections.brand ? (
+                      <MinusIcon className="h-4 w-4" />
+                    ) : (
+                      <PlusIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  {expandedSections.brand && (
+                    <div className="space-y-2 mt-3">
+                      {brands.map((brand) => (
+                        <label key={brand.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={selectedBrands.includes(brand.id)}
+                            onCheckedChange={() => handleCheckboxChange(setSelectedBrands, selectedBrands, brand.id)}
+                          />
+                          <span>{brand.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border-t border-gray-200 pt-4"></div>
+                
+                {/* Category Filter - Mobile */}
+                <div>
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('category')}>
+                    <h3 className="font-medium">Category</h3>
+                    {expandedSections.category ? (
+                      <MinusIcon className="h-4 w-4" />
+                    ) : (
+                      <PlusIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  {expandedSections.category && (
+                    <div className="space-y-2 mt-3">
+                      {categories.map((category) => (
+                        <label key={category.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={selectedCategories.includes(category.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedCategories([...selectedCategories, category.id]);
+                              } else {
+                                setSelectedCategories(selectedCategories.filter((id) => id !== category.id));
+                              }
+                            }}
+                          />
+                          <span>{category.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border-t border-gray-200 pt-4"></div>
+                
+                {/* Storage Filter - Mobile */}
+                <div>
+                  <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSection('storage')}>
+                    <h3 className="font-medium">Storage</h3>
+                    {expandedSections.storage ? (
+                      <MinusIcon className="h-4 w-4" />
+                    ) : (
+                      <PlusIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  {expandedSections.storage && (
+                    <div className="space-y-2 mt-3">
+                      {storage.map((option) => (
+                        <label key={option.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={selectedStorage.includes(option.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedStorage([...selectedStorage, option.id]);
+                              } else {
+                                setSelectedStorage(selectedStorage.filter((id) => id !== option.id));
+                              }
+                            }}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border-t border-gray-200 pt-4"></div>
+                
+                {/* Other filters continue with same pattern */}
+                
+                {/* Budget - Mobile */}
+                <div>
+                  <h3 className="font-medium mb-3">Budget</h3>
+                  <Slider
+                    value={priceRange}
+                    max={260000}
+                    step={1000}
+                    onValueChange={handlePriceChange}
+                  />
+                  <div className="flex justify-between mt-2">
+                    <span>${priceRange[0].toLocaleString()}</span>
+                    <span>${priceRange[1].toLocaleString()}</span>
+                  </div>
+                </div>
+                
+                <div className="border-t border-gray-200 pt-4"></div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      clearAllFilters();
+                      setShowMobileFilters(false);
+                    }}
+                  >
+                    Clear All
+                  </Button>
+                  <Button 
+                    className="flex-1 bg-[#04364A]"
+                    onClick={() => setShowMobileFilters(false)}
+                  >
+                    Apply Filters
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {compareNotification && (
           <div
             className="fixed top-6 right-6 bg-[#04364A] text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md animate-in slide-in-from-right"

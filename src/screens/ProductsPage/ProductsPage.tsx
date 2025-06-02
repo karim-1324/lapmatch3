@@ -667,7 +667,8 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
         
         {/* Filters */}
         <div className="flex gap-8">
-        <div className={`w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
+        {/* Desktop Filters - Add hidden md:block to hide on mobile */}
+        <div className={`hidden md:block w-[300px] bg-white rounded-lg shadow-lg p-6 ${showingChatbotResults ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Filter</h2>
               <Button 
@@ -1230,8 +1231,8 @@ const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
           </div>
         )}
       </main>
-      {isAuthenticated && <ChatbotButton />}
-
+      {/* {isAuthenticated && <ChatbotButton />} */}
+      <ChatbotButton />
       <Footer />
     </div>
   );

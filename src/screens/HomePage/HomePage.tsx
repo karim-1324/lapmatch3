@@ -180,7 +180,7 @@ export const HomePage = (): JSX.Element => {
                 Browse Laptops
               </Button>
 
-              {isAuthenticated && (
+              {/* {isAuthenticated && (
                   <Button
                     variant="outline"
                     className="border-[#ff9c4a] text-[#000000] bg-[#ffffff] hover:bg-[#e88c3d]/10 px-8 py-6 rounded-full flex items-center gap-2 shadow-md chatbot-glow"
@@ -189,7 +189,15 @@ export const HomePage = (): JSX.Element => {
                     <img src="/chatbot small icon.png" alt="Chatbot Finder" className="h-6 w-6 mr-2" />
                     Ask Chatbot
                   </Button>
-                )}
+                )} */}
+                  <Button
+                    variant="outline"
+                    className="border-[#ff9c4a] text-[#000000] bg-[#ffffff] hover:bg-[#e88c3d]/10 px-8 py-6 rounded-full flex items-center gap-2 shadow-md chatbot-glow"
+                    onClick={handleLaptopFinderClick}
+                    >
+                    <img src="/chatbot small icon.png" alt="Chatbot Finder" className="h-6 w-6 mr-2" />
+                    Ask Chatbot
+                  </Button>
             </div>
           </div>
         </div>
@@ -358,8 +366,8 @@ export const HomePage = (): JSX.Element => {
           </div>
         </div>
       </section>
-      
-      {isAuthenticated && <ChatbotButton />}
+      <ChatbotButton />
+      {/* {isAuthenticated && <ChatbotButton />} */}
       <Footer />
     </div>
   );

@@ -1,0 +1,1 @@
+web: cd server && gunicorn laptopfinder.wsgi --log-file -

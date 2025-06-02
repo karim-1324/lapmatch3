@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-primary: rgba(255, 255, 255, 1);
+  --button: rgba(0, 0, 0, 1);
+  --heading-24px-bold-font-family: "Inter", Helvetica;
+  --heading-24px-bold-font-size: 24px;
+  --heading-24px-bold-font-style: normal;
+  --heading-24px-bold-font-weight: 700;
+  --heading-24px-bold-letter-spacing: 0.72px;
+  --heading-24px-bold-line-height: 24px;
+  --text: rgba(250, 250, 250, 1);
+  --title-12px-medium-font-family: "Poppins", Helvetica;
+  --title-12px-medium-font-size: 12px;
+  --title-12px-medium-font-style: normal;
+  --title-12px-medium-font-weight: 500;
+  --title-12px-medium-letter-spacing: 0px;
+  --title-12px-medium-line-height: 18px;
+  --title-16px-regular-font-family: "Poppins", Helvetica;
+  --title-16px-regular-font-size: 16px;
+  --title-16px-regular-font-style: normal;
+  --title-16px-regular-font-weight: 400;
+  --title-16px-regular-letter-spacing: 0px;
+  --title-16px-regular-line-height: 24px;
+  --title-20px-medium-font-family: "Poppins", Helvetica;
+  --title-20px-medium-font-size: 20px;
+  --title-20px-medium-font-style: normal;
+  --title-20px-medium-font-weight: 500;
+  --title-20px-medium-letter-spacing: 0px;
+  --title-20px-medium-line-height: 28px;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 215 20.2% 65.1%;
+    --radius: 0.75rem;
+  }
+ 
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 216 34% 17%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--title-16px-regular-font-family);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-24px-bold-font-family);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(90deg, #04364A 0%, #000000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

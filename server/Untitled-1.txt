@@ -1,0 +1,21 @@
+
+2. Install dependencies:
+
+3. Run migrations:
+
+4. Create a superuser (for admin access):
+
+5. Import laptop data from CSV:
+
+6. Start the server:
+
+## API Endpoints
+
+- `GET /api/laptops/` - Get all laptops with optional filtering
+- `GET /api/laptops/{id}/` - Get a specific laptop by ID
+- `GET /api/laptops/brands/` - Get all unique brands
+- `GET /api/laptops/categories/` - Get all unique categories
+
+## Admin Interface
+
+Access the admin interface at `http://localhost:8000/admin/` to manage laptop data.
